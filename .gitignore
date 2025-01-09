@@ -1,0 +1,17 @@
+# Exclure les fichiers temporaires ou spécifiques à l'environnement local
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# Exclure les données sensibles ou volumineuses
+# data/
+# *.csv
+#*.json
+
+# Exclure les fichiers de configuration spécifiques à Streamlit
+.streamlit/
+
+# Exclure les dépendances (si nécessaires)
+venv/
+.env
