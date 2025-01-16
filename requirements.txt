@@ -1,0 +1,7 @@
+# Importer les bibliothèques nécessaires
+pandas
+matplotlib
+streamlit
+youtube-transcript-api
+google-api-python-client
+isodate
