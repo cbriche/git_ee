@@ -4,8 +4,12 @@ __pycache__/
 *.pyo
 *.log
 
+# Exclure certains répertoires spécifiques
+datas/
+docs/
+.vscode/
+
 # Exclure les données sensibles ou volumineuses
-# data/
 # *.csv
 #*.json
 
