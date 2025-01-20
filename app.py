@@ -25,6 +25,7 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
         # on charge le fichier local
         df_destination = pd.read_csv(sai_destination) # on prend le fichier local
         st.write("Résultats 'local' des POI :")
+        st.table(df_destination)
     else :
         #on vide le cache pour refaire une recherche
         st.cache_data.clear()
@@ -38,23 +39,18 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
         
         # Sauvegarder les données mises à jour dans le fichier CSV
         #df_destination.to_csv(sai_destination, index=False)
-
     
-    # on appelle la fonction pour récupérer les points d'intérêt
-    poi_destination = top_10_poi(df_destination)
+        # on appelle la fonction pour récupérer les points d'intérêt
+        poi_destination = top_10_poi(df_destination)
     
-    # Sélection du Top 10 des POI
-    #poi_destination = poi_destination.head(10)
-    
-    
-    # Affichage du tableau de résultats    
-    if poi_destination.empty:
-        st.warning("Aucun point d'intérêt détecté pour cette destination.")
-    else:
-        st.title("Résultats de l'analyse des points d'intérêt :")
-        st.table(poi_destination)
-        # On sauvegarde les datasets en local
-        poi_destination.to_csv(f"datas/poi_{search_query.replace(' ', '_').lower()}.csv", index=False)
-        df_destination.to_csv(f"datas/dest_{search_query.replace(' ', '_').lower()}.csv", index=False)
+        # Affichage du tableau de résultats    
+        if poi_destination.empty:
+            st.warning("Aucun point d'intérêt détecté pour cette destination.")
+        else:
+            st.title("Résultats de l'analyse des points d'intérêt :")
+            st.table(poi_destination)
+            # On sauvegarde les datasets en local
+            poi_destination.to_csv(f"datas/poi_{search_query.replace(' ', '_').lower()}.csv", index=False)
+            df_destination.to_csv(f"datas/dest_{search_query.replace(' ', '_').lower()}.csv", index=False)
     
 
