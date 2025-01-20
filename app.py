@@ -4,8 +4,9 @@ import pandas as pd
 import os
 from modules.appels_yt import qualif_destination, recup_transcript # Import de la fonction depuis le module externe
 from modules.poi_analyse import top_10_poi # Import de la fonction depuis le module externe
+import time
 
-#on verifie une fois que le dossier datas existe
+#on verifie une fois que le dossier datas existe sinon on le crée
 os.makedirs("datas", exist_ok=True)
 
 # titre de la page
@@ -27,23 +28,21 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
         st.write("Résultats 'local' des POI :")
         st.table(df_destination)
     else :
+
         #on vide le cache pour refaire une recherche
         st.cache_data.clear()
         # on appelle la fonction pour récupérer les données via API YouTube
         df_destination, video_ids = qualif_destination(search_query)
-        # on lance la fonction de récupération des transcripts
+        # on lance la fonction de récupération des transcripts        
         transcripts = recup_transcript(video_ids)
         
         # Ajouter les transcriptions au DataFrame
         df_destination["Transcript"] = df_destination["Video_ID"].map(transcripts)
-        
-        # Sauvegarder les données mises à jour dans le fichier CSV
-        #df_destination.to_csv(sai_destination, index=False)
-    
+   
         # on appelle la fonction pour récupérer les points d'intérêt
         poi_destination = top_10_poi(df_destination)
     
-        # Affichage du tableau de résultats    
+        # Affichage du tableau de résultats
         if poi_destination.empty:
             st.warning("Aucun point d'intérêt détecté pour cette destination.")
         else:
@@ -52,5 +51,3 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
             # On sauvegarde les datasets en local
             poi_destination.to_csv(f"datas/poi_{search_query.replace(' ', '_').lower()}.csv", index=False)
             df_destination.to_csv(f"datas/dest_{search_query.replace(' ', '_').lower()}.csv", index=False)
-    
-

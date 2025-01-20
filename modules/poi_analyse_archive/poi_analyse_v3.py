@@ -1,31 +1,19 @@
-# Description: Module pour l'analyse de sentiment hybride (VADER et TextBlob)
 import spacy
 import pandas as pd
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from textblob import TextBlob
 import multiprocessing
-import concurrent.futures
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# Charger spaCy en mode rapide (désactiver ce qui n’est pas utile)
+# Charger spaCy en mode rapide
 try:
-    nlp = spacy.load("en_core_web_sm", disable=["parser"])
+    nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger"])
 except OSError:
     print("Le modèle spaCy n'est pas installé. Installation en cours...")
     import subprocess
     subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"], check=True)
-    nlp = spacy.load("en_core_web_sm", disable=["parser"])
+    nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger"])
 
-# Instancier les analyseurs
-analyzer_vader = SentimentIntensityAnalyzer()
-
-def analyze_sentiment(transcript):
-    """ Utilise VADER pour les courts textes et TextBlob pour les longs textes """
-    word_count = len(transcript.split())
-
-    if word_count < 500:
-        return analyzer_vader.polarity_scores(transcript)["compound"]  # VADER rapide
-    else:
-        return TextBlob(transcript).sentiment.polarity  # TextBlob pour plus de précision
+# Instancier le modèle d’analyse des sentiments VADER
+analyzer = SentimentIntensityAnalyzer()
 
 def process_text(text):
     """ Fonction exécutée en parallèle pour extraire les POI et analyser le sentiment """
@@ -37,7 +25,7 @@ def process_text(text):
     if not pois:
         return []
 
-    sentiment_score = analyze_sentiment(text)  # Utilisation de la stratégie hybride
+    sentiment_score = analyzer.polarity_scores(text)["compound"]
 
     return [{"POI": poi, "Sentiment": sentiment_score} for poi in pois]
 
@@ -46,12 +34,12 @@ def top_10_poi(dataframe):
     
     texts = dataframe["Transcript"].dropna().tolist()
     
-    # Nombre optimal de threads (peut être ajusté)
-    max_workers = min(10, len(texts))  # On évite trop de threads inutiles
+    # Nombre optimal de processus
+    num_workers = max(1, multiprocessing.cpu_count() - 1)
 
-     # Utilisation de ThreadPoolExecutor
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        results = executor.map(process_text, texts)
+    # Multiprocessing Pool pour exécuter `process_text` en parallèle
+    with multiprocessing.Pool(processes=num_workers) as pool:
+        results = pool.map(process_text, texts)
 
     # Fusionner tous les résultats
     Liste_Poi_Sentiment = [item for sublist in results for item in sublist]
