@@ -3,7 +3,6 @@ import spacy
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from textblob import TextBlob
-import multiprocessing
 import concurrent.futures
 
 # Charger spaCy en mode rapide (désactiver ce qui n’est pas utile)
