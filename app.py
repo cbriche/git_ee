@@ -2,7 +2,8 @@
 import streamlit as st
 import pandas as pd
 import os
-from modules.appels_yt import qualif_destination, recup_transcript # Import de la fonction depuis le module externe
+from modules.transcript_yt import recup_transcript #Import de la fonction depuis le module externe
+from modules.liste_video_yt import qualif_destination # Import de la fonction depuis le module externe
 from modules.poi_analyse import top_10_poi # Import de la fonction depuis le module externe
 import time
 
