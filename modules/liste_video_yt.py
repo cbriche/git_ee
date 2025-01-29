@@ -124,51 +124,7 @@ def qualif_destination(search_query):
     # Retourner le DataFrame et la liste des identifiants des vidéos    
     return df_destination, video_ids
 
-# ---------- NON OPTIMISE SERA A SUPPRIMER ----------
-# fonction de récupération des transcripts youtube (mireille)
-# def recup_transcript(video_ids):
-#     #création d'un dictionnaire pour stocker les transcripts
-#     transcripts = {}
-#     #boucle pour récupérer les transcripts de chaque vidéo dans videos_ids
-#     for video_id in video_ids:
-#         try:
-#             #récupération du transcript d'une vidéo, retourne une liste de dictionnaires
-#             transcript = YouTubeTranscriptApi.get_transcript(video_id)
-#             #on transforme la liste de dictionnaires en texte et on l'ajoute au dictionnaire transcripts
-#             # avec video_id comme clé
-#             transcripts[video_id] = " ".join([entry['text'] for entry in transcript])
-#         except Exception as e:
-#             #en cas d'erreur, on stocke le message d'erreur dans le dictionnaire (facilera le nettoyage)
-#             #on limite le retour de l'erreur à 100 caractères
-#             transcripts[video_id] = f"Transcript non disponible : {str(e)[:100]}..."
-#     # Retourne tous les transcripts après avoir parcouru toutes les vidéos
-#     return transcripts  
-# ---------- FIN NON OPTIMISE ----------
 
-# ---------- OPTIMISATION : Récupération des transcripts en parallèle multiprocessing----------
-
-# Fonction pour récupérer le transcript d'1 vidéo
-def fetch_transcript(video_id):
-    """ Récupère le transcript d'une vidéo donnée """
-    try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        return video_id, " ".join([entry['text'] for entry in transcript])
-    except Exception as e:
-        return video_id, f"Transcript non disponible : {str(e)[:100]}..."
-
-def recup_transcript(video_ids, max_workers=15):
-    """ Récupère 15 transcripts en parallèle """
-    transcripts = {}
-
-    # Utilisation de ThreadPoolExecutor pour paralléliser les requêtes (VikThor)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        results = executor.map(fetch_transcript, video_ids)
-
-    # Stockage des résultats dans un dictionnaire
-    for video_id, transcript in results:
-        transcripts[video_id] = transcript
-
-    return transcripts
 
 # ---------- FIN OPTIMISATION ----------
 

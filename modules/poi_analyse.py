@@ -3,7 +3,6 @@ import spacy
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from textblob import TextBlob
-import multiprocessing
 import concurrent.futures
 
 #installer la vocab : python -m spacy download en_core_web_sm

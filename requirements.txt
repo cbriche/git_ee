@@ -9,6 +9,7 @@ python-dotenv
 textblob
 nltk
 spacy
+en_core_news_sm
 vaderSentiment
 
 # pour tout installer faire dans le terminal
