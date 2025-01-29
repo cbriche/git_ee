@@ -6,6 +6,8 @@ from textblob import TextBlob
 import multiprocessing
 import concurrent.futures
 
+#installer la vocab : python -m spacy download en_core_web_sm
+
 # Charger spaCy en mode rapide (désactiver ce qui n’est pas utile)
 try:
     nlp = spacy.load("en_core_web_sm", disable=["parser"])
