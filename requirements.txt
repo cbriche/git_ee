@@ -13,8 +13,8 @@ vaderSentiment
 langchain
 openai
 requests
-dotenv
 langchain_groq
+csv
 
 
 

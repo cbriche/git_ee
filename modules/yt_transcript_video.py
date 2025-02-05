@@ -1,26 +1,9 @@
-from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
-import pandas as pd
-import isodate
-from datetime import datetime, timedelta
-import os
 from dotenv import load_dotenv
 import concurrent.futures
 
 # Charger les variables d'environnement (clé API)
 load_dotenv()
-
-# # Gestion de la clé API YouTube
-# API_KEY = os.getenv("YOUTUBE_API_KEY") # .env
-# print(f"Clé API chargée : {API_KEY}")  # DEBUG : Vérifier la clé API
-# # Vérifier si la clé API est bien chargée
-# if not API_KEY:
-#     # raise interrompt tout le programme si il y a une erreur.
-#     raise ValueError("Erreur : La clé API YouTube n'est pas définie. Vérifie ton fichier .env.")
-
-# # Créer le service API (à faire une seule fois)
-# youtube = build('youtube', 'v3', developerKey=API_KEY)
-
 
 # ---------- OPTIMISATION : Récupération des transcripts en parallèle multiprocessing----------
 

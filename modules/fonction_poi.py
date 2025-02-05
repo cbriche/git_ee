@@ -1,14 +1,14 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_core.prompts import ChatPromptTemplate
-from dotenv import load_dotenv
-load_dotenv()  # Charge les variables d'environnement depuis .env
+# ou bien  ? from langchain.prompts import ChatPromptTemplate
+#from dotenv import load_dotenv
+#load_dotenv()  # Charge les variables d'environnement depuis .env
 import os
 from pprint import pprint
-# GROQ_API_KEY = "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"
-from langchain_groq import ChatGroq
+GROQ_API_KEY = "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"
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY") # .env
+from langchain_groq import ChatGroq
 
 # Initialisation de llm et prompt en dehors de la fonction pour éviter de les recréer à chaque appel
 llm = ChatGroq(
@@ -20,28 +20,34 @@ llm = ChatGroq(
     model_kwargs={"max_completion_tokens":380},
     api_key=GROQ_API_KEY
 )
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Summarize the transcript of this YouTube travel video by focusing only on the Points of Interest (POI) of the destination. Highlight key attractions, landmarks, cultural sites, and any must-visit places mentioned in the video. Do not include personal experiences, opinions, or general travel tips—strictly focus on the POIs. Your response must be in French.",
+            "Extrait 10 points d'intérêt (POI) à partir du texte suivant. Liste-les sous forme de points :",
         ),
-        ("human", "{transcript}"),
+        ("human", "{texte_regroupe}"),
     ]
 )
+
 chain = prompt | llm
 # ou bien chain = LLMChain(prompt=prompt, llm=llm) ?
+
+
 # Fonction de résumé d'un transcript YouTube
-def summarize_transcript(transcript) -> str:
-    """Résumé d'un transcript YouTube avec LangChain."""
-    if transcript is None:  # Vérifie si transcript est None ou vide
+def trouver_poi(texte_groupe) -> str:
+    """Extraction poi avec LangChain."""
+    if texte_groupe is None:  # Vérifie si transcript est None ou vide
         return "Transcript vide ou non disponible."  # Message par défaut si le transcript est invalide
     try:
-        result = chain.invoke({"transcript": transcript})
+        result = chain.invoke({"texte_regroupe": texte_groupe})
         return result.content
         # ou bien return result['text'] if 'text' in result else "Aucun texte généré."
+
     except Exception as e:
         return f"Erreur lors de la génération du résumé : {str(e)}"
+
 # Exemple d'appel
 #transcript_text = """
 #YouTube est une plateforme de partage de vidéos utilisée par des millions de créateurs de contenu.
@@ -49,3 +55,4 @@ def summarize_transcript(transcript) -> str:
 #"""
 #summary = summarize_transcript(transcript_text)
 #print("Résumé :", summary)
+

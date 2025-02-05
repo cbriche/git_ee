@@ -14,4 +14,5 @@ Ce qui permet ensuite d'importer directement :
     from modules import qualif_destination
 """
 
+
 # (Laisse ce fichier vide si aucun import global n'est nécessaire)

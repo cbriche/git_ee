@@ -7,6 +7,7 @@ __pycache__/
 # Exclure certains répertoires spécifiques
 datas/
 docs/
+archive_doc/
 .vscode/
 
 # Exclure les données sensibles ou volumineuses

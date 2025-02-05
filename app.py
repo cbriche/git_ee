@@ -1,11 +1,20 @@
-# page stremlit
+# import des librairies
 import streamlit as st
 import pandas as pd
 import os
-from modules.transcript_yt import recup_transcript #Import de la fonction depuis le module externe
-from modules.liste_video_yt import qualif_destination # Import de la fonction depuis le module externe
-from modules.poi_analyse import top_10_poi # Import de la fonction depuis le module externe
-import time
+import csv
+
+#importe des fonctions depuis des modules externes
+from modules.yt_qualif_dest import qualif_destination # Import de la fonction depuis le module externe
+from modules.fonction_resumes import summarize_transcript # Import de la fonction depuis le module externe
+from modules.fonction_poi import trouver_poi # Import de la fonction depuis le module externe
+
+if "RUN_COUNT" not in st.session_state:
+    st.session_state["RUN_COUNT"] = 0
+
+st.session_state["RUN_COUNT"] += 1
+print(f"🚀 Streamlit a exécuté ce script {st.session_state['RUN_COUNT']} fois.")
+
 
 #on verifie une fois que le dossier datas existe sinon on le crée
 os.makedirs("datas", exist_ok=True)
@@ -14,11 +23,7 @@ os.makedirs("datas", exist_ok=True)
 st.title("Recherche de vidéos YouTube")
 
 # Liste des mots-clés additionnels
-mc_add = [
-    "travel", "tourism", "vacation", "holiday", "trip", "journey", "voyage",
-    "visit", "explore", "discover", "adventure", "sightseeing", "travel vlog",
-    "backpacking", "road trip", "itinerary", "tourist attraction"
-    ]
+mc_add = ['travel','tourism']   
 # saisie de la destination par l'utisateur et elimination des espaces
 search_query = st.text_input("Saisir ta destination (ville, pays, région, etc.)").strip()
 clic_bouton = st.button(f'Obtenir les infos')  # Bouton pour lancer la recherche
@@ -50,25 +55,64 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
         #on vide le cache pour refaire une recherche
         st.cache_data.clear()
         # on appelle la fonction pour récupérer les données via API YouTube
-        df_destination, video_ids = qualif_destination(full_query)
-        # on lance la fonction de récupération des transcripts        
-        transcripts = recup_transcript(video_ids)
+        df_destination, video_ids = qualif_destination(full_query, search_query)
+        print("Données récupérées - df_destination:", df_destination.shape, "- video_ids:", len(video_ids))
         
-        # Ajouter les transcriptions au DataFrame
-        if df_destination.empty:
-            print("⚠️ Aucune vidéo trouvée. Vérifiez votre requête YouTube.")
-        else:
-            df_destination["Transcript"] = df_destination["Video_ID"].map(transcripts)   
-   
-        # on appelle la fonction pour récupérer les points d'intérêt
-        poi_destination = top_10_poi(df_destination)
+        if not video_ids:  # Vérifie si la liste est vide
+            st.write("Aucune vidéo trouvée pour cette destination.")
+            #st.stop()
+            print("DEBUG: Colonnes actuelles de df_destination :", df_destination.columns)
     
+        print('on appelle la fonction pour résumer les transcripts')
+        df_destination['Résumés'] = df_destination['Transcript'].apply(summarize_transcript)
+    
+        #on affiche les résultats
+        st.title("Résumes des vidéos")
+        st.table(df_destination[['Title', 'Description','Transcript', 'Résumés']])
+            
+        # desc_regroupe = ' '.join(df_destination['Description'])
+        # st.write(desc_regroupe)
+            
+        # On fusionne tous les résumés en un seul texte
+        texte_regroupe = ' '.join(df_destination['Résumés'])
+        st.title("Texte regroupé des résumés")
+        st.write(texte_regroupe)
+            
+        print('On appelle la fonction pour trouver poi llm')
+        mes_poi = trouver_poi(texte_regroupe)
         # Affichage du tableau de résultats
-        if poi_destination.empty:
-            st.warning("Aucun point d'intérêt détecté pour cette destination.")
-        else:
-            st.title("Résultats de l'analyse des points d'intérêt :")
-            st.table(poi_destination)
-            # On sauvegarde les datasets en local
-            poi_destination.to_csv(f"datas/poi_{search_query.replace(' ', '_').lower()}.csv", index=False)
-            df_destination.to_csv(f"datas/dest_{search_query.replace(' ', '_').lower()}.csv", index=False)
+        st.title("Points d'intérêt détectés")
+        st.write(mes_poi)
+        
+        
+              
+        
+        # Enregistrement des POI dans un fichier CSV
+        poi_csv_filename = f"datas/poi_{search_query.replace(' ', '_').lower()}.csv"
+        
+        with open(poi_csv_filename, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Point d'Intérêt"])  # En-tête
+            writer.writerow([mes_poi])  #Met tout le texte en une seule cellule
+
+        print(f"Le fichier '{poi_csv_filename}' a été créé avec succès.")
+    
+        
+        
+        
+        print(mes_poi)
+        print(type(mes_poi))
+            
+        
+            
+        # if poi_destination.empty:
+        #     st.warning("Aucun point d'intérêt détecté pour cette destination.")
+        # else:
+        #     st.title("Résultats de l'analyse des points d'intérêt :")
+        #     st.table(poi_destination)
+        #    
+        # On sauvegarde les datasets en local
+        # poi_destination.to_csv(f"datas/poi_{search_query.replace(' ', '_').lower()}.csv", index=False)
+        df_destination.to_csv(f"datas/dest_{search_query.replace(' ', '_').lower()}.csv", index=False)
+            
+            
