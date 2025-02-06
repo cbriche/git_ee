@@ -18,8 +18,8 @@ def recherche_video_yt(full_query,search_query,youtube,max_results,besoin_videos
                 maxResults=max_results,
                 # order='viewCount',  # Trier par nombre de vues
                 # videoDuration="medium",  # Filtrer directement les vidéos entre 4 et 20 minutes
-                # regionCode="FR",  # Cible les vidéos des États-Unis
-                # relevanceLanguage = "fr",  # Langue anglaise
+                regionCode="FR",  # Cible les vidéos des États-Unis
+                relevanceLanguage = "fr",  # Langue anglaise
                 # publishedAfter=(datetime.now() - timedelta(days=10 * 365)).isoformat("T") + "Z", # Vidéos publiées au cours des 10 dernières années
                 # # Évite les vidéos trop récentes qui sont souvent sponsorisées ou boostées artificiellement.
                 # publishedBefore = (datetime.now() - timedelta(days=30)).isoformat("T") + "Z",  # Exclure les vidéos des 30 derniers jours

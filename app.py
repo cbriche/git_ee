@@ -67,16 +67,16 @@ if search_query and clic_bouton:  # Équivaut à if search_query != ""
         df_destination['Résumés'] = df_destination['Transcript'].apply(summarize_transcript)
     
         #on affiche les résultats
-        st.title("Résumes des vidéos")
-        st.table(df_destination[['Title', 'Description','Transcript', 'Résumés']])
+        # st.title("Résumes des vidéos")
+        # st.table(df_destination[['Title', 'Description','Transcript', 'Résumés']])
             
         # desc_regroupe = ' '.join(df_destination['Description'])
         # st.write(desc_regroupe)
             
         # On fusionne tous les résumés en un seul texte
         texte_regroupe = ' '.join(df_destination['Résumés'])
-        st.title("Texte regroupé des résumés")
-        st.write(texte_regroupe)
+        # st.title("Texte regroupé des résumés")
+        # st.write(texte_regroupe)
             
         print('On appelle la fonction pour trouver poi llm')
         mes_poi = trouver_poi(texte_regroupe)
