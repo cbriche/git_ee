@@ -9,13 +9,16 @@ from modules.yt_filtrer_video import filtrer_video_yt
 
 
 # Configuration des paramètres globaux
-TOTAL_VIDEOS_NEEDED = 5  # Nombre total de vidéos finales souhaitées
+TOTAL_VIDEOS_NEEDED = 50  # Nombre total de vidéos finales souhaitées
 
 # Calcul du nombre de résultats par page en respectant la limite de l'API YouTube (max = 50)
 MAX_RESULTS_PER_PAGE = min(TOTAL_VIDEOS_NEEDED * 2, 50)
 
-#lance la connexion à l'API youtube via la fonction connect_api_youtube
+# Lancement de la connexion et stockage dans `st.session_state`
 youtube = connect_api_youtube()
+st.session_state.youtube = youtube  #  Stocker une seule fois
+
+print("Connexion YouTube réussie !")
 
   
    
@@ -25,7 +28,7 @@ def qualif_destination(full_query, search_query):
     Recherche des vidéos YouTube, applique plusieurs filtres et retourne un DataFrame final.
     Si on n’a pas 50 vidéos valides, on relance la recherche jusqu'à atteindre le quota.
     """
-    print("🔵 Début de qualif_destination()")
+    print("Début de qualif_destination()")
     # Stocke les IDs des vidéos déjà testées
     video_ids = set()
     # DataFrame pour stocker les vidéos valide
@@ -43,7 +46,7 @@ def qualif_destination(full_query, search_query):
         if not new_video_ids:
             st.error("Erreur : L'API YouTube a retourné None (quota dépassé ?)")
             st.stop()  # Arrête immédiatement l'exécution du script Streamlit
-            print("⛔️ Cette ligne ne devrait pas être atteinte si `st.stop()` fonctionne !")
+            print(" Cette ligne ne devrait pas être atteinte si `st.stop()` fonctionne !")
 
         # il est possible que nous récupérions des vidéos déjà traitées
         # Nous devons les retirer de la liste pour éviter les doublons
@@ -107,10 +110,11 @@ def qualif_destination(full_query, search_query):
         print("🔍 Fin de qualif_destination() - df_destination:", df_destination.shape, "- video_ids:", len(video_ids))
         
         if not isinstance(df_destination, pd.DataFrame) or not isinstance(video_ids, list):
-            print("❌ Erreur : qualif_destination() retourne un mauvais format :", type(df_destination), type(video_ids))
+            print("Erreur : qualif_destination() retourne un mauvais format :", type(df_destination), type(video_ids))
             return pd.DataFrame(), []
         
         return df_destination, video_ids
+ 
     
 # Ce bloc de code permet d'éviter que le script soit exécuté automatiquement lorsqu'il est 
 # importé dans un autre fichier.
