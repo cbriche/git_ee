@@ -2,6 +2,7 @@ from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 from dotenv import load_dotenv
 import os
+import streamlit as st
 
 def connect_api_youtube():
     # Charger les variables d'environnement (clé API)
@@ -17,6 +18,8 @@ def connect_api_youtube():
 
     # Créer le service API (à faire une seule fois)
     youtube = build('youtube', 'v3', developerKey=API_KEY)
+    
+    
     
     return youtube
 

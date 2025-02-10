@@ -14,7 +14,10 @@ langchain
 openai
 requests
 langchain_groq
-csv
+deep_translator
+plotly
+scikit-learn
+wordcloud
 
 
 
